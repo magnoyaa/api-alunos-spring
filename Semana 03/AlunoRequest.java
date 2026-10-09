@@ -1,36 +1,18 @@
 package com.example.alunos.dto;
 
-// dados que ENTRAM na api (sem id, o banco que gera)
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+// dados que ENTRAM na api (sem id)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class AlunoRequest {
 
     private String nome;
     private String email;
     private String curso;
-
-    public AlunoRequest() {
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getCurso() {
-        return curso;
-    }
-
-    public void setCurso(String curso) {
-        this.curso = curso;
-    }
 }

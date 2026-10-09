@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.example.alunos.dto.AlunoRequest;
 import com.example.alunos.dto.AlunoResponse;
 import com.example.alunos.entity.Aluno;
+import com.example.alunos.exception.AlunoNaoEncontradoException;
 import com.example.alunos.repository.AlunoRepository;
 
 @Service
@@ -18,7 +19,7 @@ public class AlunoService {
         this.repository = repository;
     }
 
-    // POST: request -> entity -> salva -> response
+    // POST
     public AlunoResponse create(AlunoRequest request) {
         Aluno aluno = new Aluno();
         aluno.setNome(request.getNome());
@@ -30,8 +31,7 @@ public class AlunoService {
         return toResponse(salvo);
     }
 
-    // GET: Optional tratado com if/else (sem lambda)
-    // retorna null se nao achar, o controller transforma em 404
+    // GET (Optional com if/else, sem lambda)
     public AlunoResponse getById(Long id) {
         Optional<Aluno> optional = repository.findById(id);
 
@@ -39,34 +39,31 @@ public class AlunoService {
             Aluno aluno = optional.get();
             return toResponse(aluno);
         } else {
-            return null;
+            throw new AlunoNaoEncontradoException(id);
         }
     }
 
-    // PUT: true se atualizou, false se o id nao existe
-    public boolean update(Long id, AlunoRequest request) {
-        Optional<Aluno> optional = repository.findById(id);
+    // PUT: findById + orElseThrow joga excecao se o id nao existir
+    public void update(Long id, AlunoRequest request) {
+        Aluno aluno = repository.findById(id)
+                .orElseThrow(() -> new AlunoNaoEncontradoException(id));
 
-        if (optional.isPresent()) {
-            Aluno aluno = optional.get();
-            aluno.setNome(request.getNome());
-            aluno.setEmail(request.getEmail());
-            aluno.setCurso(request.getCurso());
-            repository.save(aluno);
-            return true;
-        } else {
-            return false;
-        }
+        aluno.setNome(request.getNome());
+        aluno.setEmail(request.getEmail());
+        aluno.setCurso(request.getCurso());
+
+        repository.save(aluno);
     }
 
-    // DELETE: confere se existe antes de apagar
-    public boolean delete(Long id) {
-        if (repository.existsById(id)) {
-            repository.deleteById(id);
-            return true;
-        } else {
-            return false;
+    // DELETE: existsById + if (!exists), sem lambda
+    public void deleteById(Long id) {
+        boolean exists = repository.existsById(id);
+
+        if (!exists) {
+            throw new AlunoNaoEncontradoException(id);
         }
+
+        repository.deleteById(id);
     }
 
     // entity -> response

@@ -25,46 +25,30 @@ public class AlunoController {
         this.service = service;
     }
 
-    // 201 Created
+    // 201
     @PostMapping
     public ResponseEntity<AlunoResponse> create(@RequestBody AlunoRequest request) {
         AlunoResponse criado = service.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(criado);
     }
 
-    // 200 OK (ou 404 se nao achar)
+    // 200
     @GetMapping("/{id}")
     public ResponseEntity<AlunoResponse> getById(@PathVariable Long id) {
-        AlunoResponse response = service.getById(id);
-
-        if (response != null) {
-            return ResponseEntity.ok(response);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(service.getById(id));
     }
 
-    // 204 No Content (ou 404 se o id nao existe)
+    // 204
     @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody AlunoRequest request) {
-        boolean atualizou = service.update(id, request);
-
-        if (atualizou) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        service.update(id, request);
+        return ResponseEntity.noContent().build();
     }
 
-    // 204 No Content (ou 404 se o id nao existe)
+    // 204
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        boolean apagou = service.delete(id);
-
-        if (apagou) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        service.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
